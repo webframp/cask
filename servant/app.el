@@ -30,6 +30,8 @@
 (require 'f)
 (require 'servant)
 
+(setq debug-on-error t)
+
 (let* ((port 9191)
        (host "127.0.0.1")
        (directory (f-parent (f-this-file)))
