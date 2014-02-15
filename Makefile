@@ -15,7 +15,7 @@ ecukes:
 	$(CASK) exec ecukes
 
 start-server: $(SERVANT_DIR)
-	${CASK} exec ${EMACS} -Q --load $(SERVANT_DIR)/app.el --batch > $(SERVANT_TMP_DIR)/servant.log 2>&1 &
+	${CASK} exec ${EMACS} -Q --load $(SERVANT_DIR)/app.el --batch > $(SERVANT_TMP_DIR)/servant.log
 
 stop-server:
 	kill $$(cat $(SERVANT_TMP_DIR)/servant.pid)
