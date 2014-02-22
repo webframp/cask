@@ -8,6 +8,7 @@ SERVANT_PACKAGES_DIR = $(SERVANT_DIR)/packages
 SERVANT_NEW_PACKAGES_DIR = $(SERVANT_DIR)/new-packages
 SERVANT_ARCHIVE_CONTENTS = $(SERVANT_PACKAGES_DIR)/archive-contents
 SERVANT_NEW_ARCHIVE_CONTENTS = $(SERVANT_NEW_PACKAGES_DIR)/archive-contents
+SERVANT_CASK_DIR = $(SERVANT_DIR)/.cask
 
 FIXTURES_DIR = fixtures
 
@@ -28,10 +29,13 @@ start-server: $(SERVANT_DIR)
 stop-server:
 	kill $$(cat $(SERVANT_TMP_DIR)/servant.pid)
 
-$(SERVANT_DIR): clean
+$(SERVANT_DIR): $(SERVANT_CASK_DIR)
 $(SERVANT_DIR): $(SERVANT_TMP_DIR)
-$(SERVANT_DIR): $(SERVANT_PACKAGES_DIR)/archive-contents
-$(SERVANT_DIR): $(SERVANT_NEW_PACKAGES_DIR)/archive-contents
+$(SERVANT_DIR): $(SERVANT_ARCHIVE_CONTENTS)
+$(SERVANT_DIR): $(SERVANT_NEW_ARCHIVE_CONTENTS)
+
+$(SERVANT_CASK_DIR):
+	$(CASK) install --path $(SERVANT_DIR)
 
 $(SERVANT_TMP_DIR):
 	@mkdir -p $@
@@ -69,12 +73,9 @@ $(SERVANT_ARCHIVE_CONTENTS): $(SERVANT_PACKAGES_DIR)/package-c-0.0.1.tar
 $(SERVANT_ARCHIVE_CONTENTS): $(SERVANT_PACKAGES_DIR)/package-d-0.0.1.tar
 $(SERVANT_ARCHIVE_CONTENTS): $(SERVANT_PACKAGES_DIR)/package-e-0.0.1.tar
 $(SERVANT_ARCHIVE_CONTENTS): $(SERVANT_PACKAGES_DIR)/package-f-0.0.1.el
-	$(CASK) exec $(SERVANT) index --packages-path $(SERVANT_PACKAGES_DIR)
+	$(shell cd $(SERVANT_DIR) && $(CASK) exec $(SERVANT) index --packages-path packages)
 
 $(SERVANT_NEW_ARCHIVE_CONTENTS): $(SERVANT_NEW_PACKAGES_DIR)/package-a-0.0.2.el
-	$(CASK) exec $(SERVANT) index --packages-path $(SERVANT_NEW_PACKAGES_DIR)
+	$(shell cd $(SERVANT_DIR) && $(CASK) exec $(SERVANT) index --packages-path new-packages)
 
-clean:
-	rm -rf $(SERVANT_DIR)
-
-.PHONY: start-server stop-server unit ecukes test all clean
+.PHONY: start-server stop-server unit ecukes test all
